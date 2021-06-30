@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { initTerms } = require('../../services/terms')
+const { insertTerms } = require('../../database/actions/terms')
 
 
 router.get('/getTerms', (req,res) => {
@@ -20,7 +21,7 @@ router.get('/getTerms', (req,res) => {
                  : '-',
                 has_children: term.has_children,
             }))
-            console.log(termsData) /* */
+            insertTerms(termsData)
         })
         .catch(err => res.status(400).send(err))
 })
