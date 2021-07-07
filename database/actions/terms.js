@@ -1,4 +1,5 @@
 const TermsSchema = require('../models/terms')
+const mongoose = require('mongoose')
 
 const insertTerms = async (terms) => {
     try {
@@ -11,4 +12,10 @@ const insertTerms = async (terms) => {
     }
 }
 
-module.exports = { insertTerms }
+
+const checkTerms = async () => {
+    return await TermsSchema.estimatedDocumentCount();
+
+    }
+
+module.exports = { insertTerms, checkTerms }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 mongoose.connection.close();
 //Set up default mongoose connection
-const mongoDB = 'mongodb://localhost:27017/firstDB';
+const mongoDB = process.env.MONGO_URI;
 mongoose.connect(mongoDB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -19,3 +19,5 @@ db.on('error', () => {
   console.error.bind(console, 'MongoDB connection error:');
   db.close();
 });
+
+module.exports = mongoose;
