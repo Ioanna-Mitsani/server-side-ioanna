@@ -19,3 +19,5 @@ db.on('error', () => {
   console.error.bind(console, 'MongoDB connection error:');
   db.close();
 });
+
+module.exports = mongoose;

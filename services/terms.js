@@ -2,14 +2,9 @@ const express = require('express')
 const axios = require('axios')
 
 
-const initTerms = async ({ page=1, size=10 }) => {
+const initTerms = async () => {
     
-    return await axios.get(process.env.API_ENDPOINT, {
-        params: {
-            page,
-            size
-        }
-    })
+    return await axios.get(process.env.API_ENDPOINT)
             
 }
 
