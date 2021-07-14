@@ -19,7 +19,15 @@ const getTerms = async (page, size) => {
     const sizeInt = parseInt(size)
 
     
-    return await TermsSchema.find().skip(pageInt*sizeInt).limit(sizeInt)
+    const terms = await TermsSchema.find()
+        .skip((pageInt-1)*sizeInt)
+            .limit(sizeInt)
+                .exec()
+    
+    const count = await TermsSchema.countDocuments();
+
+    return {terms, count}
+              
 }
 
 
