@@ -1,4 +1,7 @@
+// Imports
 const mongoose = require('mongoose')
+
+// *** Connection module *** //
 
 mongoose.connection.close();
 //Set up default mongoose connection

@@ -11,7 +11,8 @@ require ('./database/connection')
 app.use(cors())
 app.use('/', routes)
 
-// Action checkTerms
+// Action checkTerms: Checks if third party API data are registered to our database.
+// If not, it initializes the process of mapping & importing them
 
 checkTerms().
     then((count) => {

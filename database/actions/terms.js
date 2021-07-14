@@ -1,5 +1,6 @@
 const TermsSchema = require('../models/terms')
 
+// insertTerms db action - used in app.js
 const insertTerms = async (terms) => {
     try {
         return await TermsSchema.insertMany(terms)    
@@ -9,11 +10,13 @@ const insertTerms = async (terms) => {
     }
 }
 
-
+// checkTerms db action - used in app.js
 const checkTerms = async () => {
     return await TermsSchema.estimatedDocumentCount();
 }
 
+// getTerms db action - Data pagination for the front-end
+// See pharma-react swagger.yaml for more info
 const getTerms = async (page, size) => {
     const pageInt = parseInt(page)
     const sizeInt = parseInt(size)
@@ -30,5 +33,5 @@ const getTerms = async (page, size) => {
               
 }
 
-
+// Exports
 module.exports = { insertTerms, checkTerms, getTerms }
