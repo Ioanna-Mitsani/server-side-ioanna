@@ -1,11 +1,8 @@
 const TermsSchema = require('../models/terms')
-const mongoose = require('mongoose')
 
 const insertTerms = async (terms) => {
     try {
-        for (const term of terms) {
-            await TermsSchema.create(term)    
-        }
+        return await TermsSchema.insertMany(terms)    
         
     } catch (error) {
         console.log(error)
@@ -15,7 +12,15 @@ const insertTerms = async (terms) => {
 
 const checkTerms = async () => {
     return await TermsSchema.estimatedDocumentCount();
+}
 
-    }
+const getTerms = async (page, size) => {
+    const pageInt = parseInt(page)
+    const sizeInt = parseInt(size)
 
-module.exports = { insertTerms, checkTerms }
+    
+    return await TermsSchema.find().skip(pageInt*sizeInt).limit(sizeInt)
+}
+
+
+module.exports = { insertTerms, checkTerms, getTerms }
