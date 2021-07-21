@@ -9,6 +9,7 @@ require ('./database/connection')
 
 // Middleware
 app.use(cors())
+app.use(express.json())
 app.use('/', routes)
 
 // Action checkTerms: Checks if third party API data are registered to our database.
@@ -23,6 +24,7 @@ checkTerms().
                 .then(({data}) => {
                     const terms = data._embedded.terms
 
+                    // !! Helper
                     const termsData = terms.map(term => ({
                         key: term.obo_id,
                         label: term.label,
