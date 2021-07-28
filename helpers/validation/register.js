@@ -1,5 +1,4 @@
 const joi = require('joi')
-const UserSchema = require('../database/models/users')
 
 // User input validation process
 const registerSchema = joi.object({
