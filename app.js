@@ -45,6 +45,6 @@ checkTerms().
         .catch(err => console.log(err))
    
 
-app.listen(process.env.SERVER_PORT || 3000, () => {
-    console.log(`Test app listening on port ${process.env.SERVER_PORT || 3000}.`)
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Test app listening on port ${process.env.PORT || 3000}.`)
 });
