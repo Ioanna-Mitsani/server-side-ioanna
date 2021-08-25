@@ -6,8 +6,11 @@ const cors = require('cors');
 const { insertTerms, checkTerms } = require('./database/actions/terms');
 const { initTerms } = require('./services/terms')
 require ('./database/connection')
-
+const compression = require('compression')
+const helmet = require('helmet')
 // Middleware
+app.use(helmet())
+app.use(compression())
 app.use(cors())
 app.use(express.json())
 app.use('/', routes)
@@ -42,6 +45,6 @@ checkTerms().
         .catch(err => res.status(400).send(err))
    
 
-app.listen(process.env.SERVER_PORT, () => {
+app.listen(process.env.SERVER_PORT || 3000, () => {
     console.log(`Test app listening on port ${process.env.SERVER_PORT}.`)
 });
