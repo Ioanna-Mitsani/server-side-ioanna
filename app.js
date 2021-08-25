@@ -42,7 +42,7 @@ checkTerms().
           
     })
 })
-        .catch(err => res.status(400).send(err))
+        .catch(err => console.log(err))
    
 
 app.listen(process.env.SERVER_PORT || 3000, () => {
