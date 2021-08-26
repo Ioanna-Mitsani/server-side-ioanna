@@ -2,7 +2,7 @@ const User = require('../models/users')
 const bcrypt = require('bcrypt')
 
 // checks if user is registered to db - filter: email
-const userExists = async (email) => {
+const emailCheck = async (email) => {
     const emailExists = await User.findOne({ email: email }).exec();
     return emailExists;
 }
@@ -32,4 +32,4 @@ const loginValidation = async (email, password) => {
     return { user, passwordValidation}
 }
 
-module.exports = { userExists, registerUser, loginValidation }
+module.exports = { emailCheck, registerUser, loginValidation }

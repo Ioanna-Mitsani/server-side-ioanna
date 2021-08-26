@@ -1,5 +1,5 @@
 const emailConfig = {
-  emailFrom: 'nodejsauthmailer@gmail.com',
+  from: '"Pharma App" nodejsauthmailer@gmail.com',
     host: 'smtp.gmail.com',
     port: 587,
     auth: {
