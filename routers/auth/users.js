@@ -72,18 +72,39 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/verify-email', async (req, res) => {
-    const params = new URLSearchParams()
-    const token = params.get('token')
+        const token = req.query.token
 
-    const hasToken = await User.findOne({ verificationToken: token })
+        const user = await User.findOne({ verificationToken: token })
 
-    if(hasToken){
-        const user = await User.findOneAndUpdate({ verificationToken: token }, { verify: Date.now() }).exec()
-        res.status(200).send('Your account has been verified')
-    } else {
-        res.status(400).send('Your account must be verified first. Please check your e-mails.')
+        if(user){
+            user.verified = Date.now()
+            await user.save()
+            res.status(200).send('Verification successful, you can now login')
+        }else{
+            res.status(400).send('Verification failed due to an invalid token')
     }
+    
+})
 
+router.post('/login', async (req,res) => {
+    const user = await User.findOne({ email: req.body.email })
+    if(!user) return res.status(400).send('Incorrect email')
+
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
+    if (!validPassword) return res.status(400).send('Incorrect password')
+
+    if(!user.verified) return res.status(400).send('Account is not verified!')
+
+    try{
+        const { error } = await loginSchema.validateAsync(req.body)
+        if(error) return res.status(400).send(error.details[0].message)
+        else{
+            const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET)
+            res.header('auth-token', token).send(token)
+        }
+    } catch (error){
+        res.status(500).send(error)
+    }
 })
 
 // Exports
