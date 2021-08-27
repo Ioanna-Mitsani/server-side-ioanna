@@ -73,7 +73,7 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/verify-email', async (req, res) => {
-        const token = req.query.token
+        const token = req.body.token
 
         const user = await User.findOne({ verificationToken: token })
 
@@ -83,7 +83,7 @@ router.post('/verify-email', async (req, res) => {
             res.status(200).send('Verification successful, you can now login')
         }else{
             res.status(400).send('Verification failed due to an invalid token')
-    }
+    } 
     
 })
 
@@ -126,7 +126,7 @@ router.post('/forgot-password', async (req, res) => {
 })
 
 router.post('/reset-password', async (req, res) => {
-    const token = req.query.token
+    const token = req.body.token
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
