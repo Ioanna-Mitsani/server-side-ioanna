@@ -8,6 +8,7 @@ const crypto = require('crypto')
 const User = require('../../database/models/users')
 const registerSchema = require('../../helpers/validation/register')
 const loginSchema = require('../../helpers/validation/login')
+const passwordSchema = require('../../helpers/validation/password')
 const sendEmail = require('../../services/nodemailer');
 
 // Sign up router - authentication methods
@@ -107,5 +108,47 @@ router.post('/login', async (req,res) => {
     }
 })
 
+
+router.post('/forgot-password', async (req, res) => {
+    const user = await User.findOne({ email: req.body.email})
+    if(!user) return res.status(400).send('Incorrect email')
+    else{
+        const origin = req.header('Origin')
+        const token = user.verificationToken
+        sendEmail({
+            from: '"Pharma App" nodejsauthmailer@gmail.com',
+            to: req.body.email,
+            subject: 'Pharma App | Password reset',
+            text:`To reset your password, click the following link:${origin}/auth/reset-password?token=${token}`
+        }).catch((err) => console.log(err))
+        res.status(200).send('E-mail sent!')    
+    }
+})
+
+router.post('/reset-password', async (req, res) => {
+    const token = req.query.token
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+
+    try {
+        const { error } = await passwordSchema.validateAsync(req.body)
+
+        if(error){
+            res.status(400).send(error.details[0].message)
+            return;
+        } else {
+            const user = await User.findOne({ verificationToken: token })
+
+            user.password = hashedPassword
+            await user.save()
+        }
+        res.status(200).send('Password has been reseted')
+    } catch (error) {
+        res.status(500).send(error)
+    }
+
+
+})
 // Exports
 module.exports = router;
