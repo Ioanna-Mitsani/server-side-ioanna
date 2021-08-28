@@ -1,18 +1,19 @@
 // Imports
 const router = require('express').Router();
-
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
-const User = require('../../database/models/users')
-const registerSchema = require('../../helpers/validation/register')
-const loginSchema = require('../../helpers/validation/login')
-const passwordSchema = require('../../helpers/validation/password')
-const sendEmail = require('../../services/nodemailer');
+const User = require('../../database/models/users')     // user model
+const {loginSchema, registerSchema, passwordSchema } = require('../../helpers/validation/validationSchemas')     // joi validator schemas for user inputs
+
+const { registrationEmail, resetPasswordEmail } = require('../../helpers/email/mailOptions') // email content for nodemailer service
+
+const sendEmail = require('../../services/nodemailer'); // transporter object - nodemailer
 
 // Sign up router - authentication methods
 router.post('/register', async (req, res) => {
+    // check if user exists
     const userExists = await User.findOne({ email:req.body.email })
     
     if(userExists){
@@ -20,11 +21,14 @@ router.post('/register', async (req, res) => {
         return;
     }
 
+    // password hashing
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
+    // generating a verification token
     const verificationToken = crypto.randomBytes(40).toString('hex')
 
+    // creating a new user
     const user = new User({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -33,6 +37,7 @@ router.post('/register', async (req, res) => {
         verificationToken: verificationToken
     })
 
+    // validation of user inputs
     try {
         const { error } = await registerSchema.validateAsync(req.body)
 
@@ -40,6 +45,7 @@ router.post('/register', async (req, res) => {
             res.status(400).send(error.details[0].message)
             return;
         } else {
+            // user creation with role assignment
             const userCount = await User.countDocuments()
             if(userCount === 0){
                 user.role = 'Admin'
@@ -48,22 +54,13 @@ router.post('/register', async (req, res) => {
             }
 
             const saveUser = await user.save();
-
             
+
             const origin = req.header('Origin')
             const verificationLink = `${origin}/auth/verify-email?token=${verificationToken}`
-            sendEmail({
-                from: '"Pharma App" nodejsauthmailer@gmail.com',
-                to: req.body.email,
-                subject: 'Pharma App | Verify your account',
-                text: `
-                    Welcome to Pharma!
-                    
-                    Hello ${req.body.firstName},
-                    Welcome to Pharma app! To verify your e-mail address, please click the following link:
-                    ${verificationLink}`
             
-            })
+            // sending account verification email
+            sendEmail(registrationEmail(req.body.email, req.body.firstName, verificationLink))
                 .catch((err) => console.log(err))
             res.status(200).send('User created!')
         }
@@ -72,12 +69,15 @@ router.post('/register', async (req, res) => {
     }
 })
 
+
+// E-mail verification router
 router.post('/verify-email', async (req, res) => {
         const token = req.body.token
 
         const user = await User.findOne({ verificationToken: token })
 
         if(user){
+            // if user has the token sent, verifies the user and updates the document
             user.verified = Date.now()
             await user.save()
             res.status(200).send('Verification successful, you can now login')
@@ -87,19 +87,27 @@ router.post('/verify-email', async (req, res) => {
     
 })
 
+
+// Login router
 router.post('/login', async (req,res) => {
+    // checks if user exists
     const user = await User.findOne({ email: req.body.email })
     if(!user) return res.status(400).send('Incorrect email')
 
+    // checks if password is correct
     const validPassword = await bcrypt.compare(req.body.password, user.password)
     if (!validPassword) return res.status(400).send('Incorrect password')
 
+
+    // login is rejected if the account is not verified
     if(!user.verified) return res.status(400).send('Account is not verified!')
 
     try{
+        // validating user inputs
         const { error } = await loginSchema.validateAsync(req.body)
         if(error) return res.status(400).send(error.details[0].message)
         else{
+            // user logs in and JWT is sent to headers
             const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET)
             res.header('auth-token', token).send(token)
         }
@@ -109,28 +117,31 @@ router.post('/login', async (req,res) => {
 })
 
 
+// User password reset
 router.post('/forgot-password', async (req, res) => {
+    // checks if user exists
     const user = await User.findOne({ email: req.body.email})
     if(!user) return res.status(400).send('Incorrect email')
     else{
+        // email sent with password reset link
         const origin = req.header('Origin')
-        const token = user.verificationToken
-        sendEmail({
-            from: '"Pharma App" nodejsauthmailer@gmail.com',
-            to: req.body.email,
-            subject: 'Pharma App | Password reset',
-            text:`To reset your password, click the following link:${origin}/auth/reset-password?token=${token}`
-        }).catch((err) => console.log(err))
+        const verificationToken = user.verificationToken
+        const resetLink = `${origin}/auth/reset-password?token=${verificationToken}`
+        sendEmail(resetPasswordEmail(req.body.email, req.body.firstName, resetLink)).catch((err) => console.log(err))
         res.status(200).send('E-mail sent!')    
     }
 })
 
+
+// User sets a new password
 router.post('/reset-password', async (req, res) => {
     const token = req.body.token
 
+    // password hashing
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
+    // user input validation
     try {
         const { error } = await passwordSchema.validateAsync(req.body)
 
@@ -147,8 +158,6 @@ router.post('/reset-password', async (req, res) => {
     } catch (error) {
         res.status(500).send(error)
     }
-
-
 })
 // Exports
 module.exports = router;
