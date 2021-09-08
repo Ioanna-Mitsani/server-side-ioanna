@@ -8,12 +8,48 @@ const { initTerms } = require('./services/terms')
 require ('./database/connection')
 const compression = require('compression')
 const helmet = require('helmet')
+const morgan = require('morgan')
+const mongooseMorgan = require('mongoose-morgan')
 // Middleware
 app.use(helmet())
 app.use(compression())
 app.use(cors())
 app.use(express.json())
+ 
+morgan.token('status', ( _, res) => {
+    return res?.statusCode;
+  });
+morgan.token('statusMessage', ( _, res) => {
+    return res?.statusMessage;
+  });
+
+app.use(mongooseMorgan({
+    collection: 'error_logs',
+    connectionString: process.env.MONGO_URI,
+    },
+   {
+    skip: function (req, res) {
+        return res.statusCode < 400;
+    }
+    },
+    'combined'
+))
+
 app.use('/', routes)
+
+app.use((err, req, res, next) => {
+    res.statusCode = err.status; // we set in the response error property our custom error
+    res.statusMessage = err.statusMessage
+    next(err); // with next() we allow the middleware to proceed to the next available action / middleware (in our case at the error sender middleware)
+});
+ 
+// error sender
+
+app.use((err, req, res, next) => {
+    res.status(err.status).send({message: err.statusMessage});
+});
+
+
 
 // Action checkTerms: Checks if third party API data are registered to our database.
 // If not, it initializes the process of mapping & importing them
@@ -44,6 +80,7 @@ checkTerms().
 })
         .catch(err => res.status(400).send(err))
    
+
 
 app.listen(process.env.SERVER_PORT, () => {
     console.log(`Test app listening on port ${process.env.SERVER_PORT}`)
