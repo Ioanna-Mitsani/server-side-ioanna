@@ -2,23 +2,10 @@
 const nodemailer = require('nodemailer');
 const {emailConfig}  = require('../helpers/email/mailConfig')
 
-/* const mailOptions = {
-  from: 'Node.js API <nodejsauthmailer@gmail.com>',
-  to: 'ioanna.mitsani.72@gmail.com',
-  Subject: 'Hello There!',
-  text: 'Welcome to Pharma',
-  html: '<body><p>Welcome to Pharma!</p></body>'
-} */
 
-const sendEmail = async () => {
+const sendEmail = async ({from, to, subject, text}) => {
   const transporter = nodemailer.createTransport(emailConfig);
-  await transporter.sendMail({
-  from: 'Node.js API <nodejsauthmailer@gmail.com>',
-  to: '13-13099@saeinstitute.edu',
-  Subject: 'Hello There!',
-  text: 'Welcome to Pharma',
-  html: '<body><p>Welcome to Pharma!</p></body>'
-})
+  await transporter.sendMail({from, to, subject, text})
 }
  
 module.exports = sendEmail;

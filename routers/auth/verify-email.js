@@ -1,8 +1,20 @@
+// Imports
 const router = require('express').Router();
-const crypto = require('crypto')
+const emailVerification = require('../../database/actions/users/emailVerification')
 
-router.post('/verify-email', (req, res) => {
-    const origin = req.header('Origin')
-    const token = crypto.randomBytes(40).toString('hex')
-    const verificationLink = `${origin}/auth/verify-email?token=${token}`
-})
+// Router handler
+const verifyEmail = (req, res, next) => {
+    const {token} = req.body
+
+    emailVerification(token)
+        .then(() => {
+            res.status(200).send({ message: 'Verification was successful, you can now login'})
+        })
+            .catch(next)
+}
+
+
+router.post('/verify-email', verifyEmail)
+
+
+module.exports = router
