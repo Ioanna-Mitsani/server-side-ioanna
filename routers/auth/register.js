@@ -15,7 +15,7 @@ const register = (req, res, next) => {
 }
 
 
-router.post('/register', registerSchema, register)
+router.post('/register', registerSchema, register) // Validation Schema is included as a handler
 
 
 module.exports = router

@@ -1,6 +1,6 @@
 // Imports
 const joi = require('joi')
-const { bodySchemaValidate, termSchemaValidate } = require('./schemaValidation')
+const { bodySchemaValidate, paramsSchemaValidate } = require('./schemaValidation')
 
 const loginValidation = async (req, _, next) => {
     const schema = joi.object({
@@ -33,5 +33,22 @@ const registerSchema = (req, _, next) => {
     bodySchemaValidate(req, next, schema)
 }
 
+const updTermSchema = (req, _, next) => {
+    const schema = joi.object({
+        label: joi.string().trim().min(3).required(),
+        synonyms: joi.string().trim().required(),
+        term_editor: joi.string().trim(),
+        has_children: joi.boolean()
+    })
+    bodySchemaValidate(req, next, schema)
+}
 
-module.exports = {loginValidation, passwordSchema, registerSchema, };
+
+const deleteSchema = (req, _, next) => {
+    const schema = joi.object({
+        id: joi.string().required()
+    })
+    paramsSchemaValidate(req, next, schema)
+}
+
+module.exports = {loginValidation, passwordSchema, registerSchema, updTermSchema, deleteSchema };

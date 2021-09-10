@@ -30,6 +30,7 @@ const getTerms = async (page, size) => {
     
     const count = await TermsSchema.countDocuments();
 
+    if(!terms || !count) throw{ status: 400, statusMessage: 'Error on receiving the terms'}
     return {terms, count}
               
 }
@@ -46,7 +47,7 @@ const updateTerm = async (id, label, synonyms, term_editor, has_children) => {
     {new: true})
 
     await term.save()
-    if(!term) throw { status: 404, statusMessage: 'Term not found!'}
+    if(!term) throw { status: 404, statusMessage: 'Term not found'}
 
     return term
 }
@@ -66,13 +67,14 @@ const createTerm = async (key, label, synonyms, term_editor, has_children) => {
         term_editor: term_editor,
         has_children: has_children
     })
-    return newTerm
+
+    await newTerm.save()
 }
 
 
 // Async function for /api/term/:id router to delete terms
 const deleteTerm = async (id) => {
-    const term = await TermsSchema.findOneAndDelete({ key: key })
+    const term = await TermsSchema.findOneAndDelete({ key: id })
     if(!term) throw { status: 404, statusMessage: 'Term not found!'}
 }
 

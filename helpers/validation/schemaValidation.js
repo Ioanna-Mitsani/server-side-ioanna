@@ -1,9 +1,10 @@
+// Req.body validation error handling
 const bodySchemaValidate = (req, next, schema) => {
     const { error, value } = schema.validate(req.body)
     if (error) {
         next({
-            statusCode: 400,
-            errorMessage: error.details[0].message,
+            status: 400,
+            statusMessage: error.details[0].message,
         })
     } else {
         req.body = value
@@ -11,5 +12,19 @@ const bodySchemaValidate = (req, next, schema) => {
     }
 }
 
+// Req.params validation error handling 
+const paramsSchemaValidate = (req, next, schema) => {
+    const { error, value } = schema.validate(req.params)
+    if (error) {
+        next({
+            status: 400,
+            statusMessage: error.details[0].message,
+        })
+    } else {
+        req.params = value
+        next();
+    }
+}
 
-module.exports = { bodySchemaValidate, }
+//Exports
+module.exports = { bodySchemaValidate, paramsSchemaValidate}
