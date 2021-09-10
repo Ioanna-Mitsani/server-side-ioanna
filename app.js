@@ -11,9 +11,9 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const mongooseMorgan = require('mongoose-morgan')
 // Middleware
+app.use(cors())
 app.use(helmet())
 app.use(compression())
-app.use(cors())
 app.use(express.json())
  
 morgan.token('status', ( _, res) => {
@@ -32,7 +32,7 @@ app.use(mongooseMorgan({
         return res.statusCode < 400;
     }
     },
-    'combined'
+    ':date - :method - :url - status: :status - error_message: :statusMessage - :res[content-length] - :response-time ms'
 ))
 
 app.use('/', routes)

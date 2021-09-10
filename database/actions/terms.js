@@ -15,6 +15,7 @@ const checkTerms = async () => {
     return await TermsSchema.estimatedDocumentCount();
 }
 
+
 // getTerms db action - Data pagination for the front-end
 // See pharma-react swagger.yaml for more info
 const getTerms = async (page, size) => {
@@ -33,5 +34,30 @@ const getTerms = async (page, size) => {
               
 }
 
+
+const updateTerm = async (id, label, synonyms, term_editor, has_children) => {
+    const term = await TermsSchema.findOneAndUpdate({ key: id }, {
+        label: label,
+        synonyms: synonyms,
+        term_editor: term_editor,
+        has_children: has_children
+    },
+    {new: true})
+
+    await term.save()
+    if(!term) throw { status: 404, statusMessage: 'Term not found!'}
+
+}
+
+/* const createTerm = async (id, label, synonyms, obo_id, term_editor, has_children) => {
+    const term = await TermsSchema.findOne({ key: id })
+
+    if(term) throw { status: 400, statusMessage: 'Term with this ID is already registered'}
+
+    const term = await new TermsSchema({
+
+    })
+
+ */
 // Exports
-module.exports = { insertTerms, checkTerms, getTerms }
+module.exports = { insertTerms, checkTerms, getTerms, updateTerm }
