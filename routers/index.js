@@ -1,11 +1,13 @@
 // Imports
 const router = require('express').Router();
 
-// API
+// APIs
 const api = require('./api');
+const auth = require('./auth')
 
-// Router for API
+// Routers for APIs
 router.use('/api', api)
+router.use('/auth', auth)
 
 // Export
 module.exports = router;
