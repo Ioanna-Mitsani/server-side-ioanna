@@ -47,17 +47,29 @@ const updateTerm = async (id, label, synonyms, term_editor, has_children) => {
     await term.save()
     if(!term) throw { status: 404, statusMessage: 'Term not found!'}
 
+    return term
 }
 
-/* const createTerm = async (id, label, synonyms, obo_id, term_editor, has_children) => {
-    const term = await TermsSchema.findOne({ key: id })
+const createTerm = async (key, label, synonyms, term_editor, has_children) => {
+    const term = await TermsSchema.findOne({ key: key })
 
     if(term) throw { status: 400, statusMessage: 'Term with this ID is already registered'}
 
-    const term = await new TermsSchema({
-
+    const newTerm = new TermsSchema({
+        key: key,
+        label: label,
+        synonyms: synonyms,
+        obo_id: key,
+        term_editor: term_editor,
+        has_children: has_children
     })
+    return newTerm
+}
 
- */
+const deleteTerm = async (id) => {
+    const term = await TermsSchema.findOneAndDelete({ key: key })
+    if(!term) throw { status: 404, statusMessage: 'Term not found!'}
+}
+
 // Exports
-module.exports = { insertTerms, checkTerms, getTerms, updateTerm }
+module.exports = { insertTerms, checkTerms, getTerms, updateTerm, createTerm, deleteTerm }
