@@ -1,8 +1,6 @@
 // Imports
 const router = require('express').Router();
 const { getTerms } = require('../../database/actions/terms')
-// const TermsSchema = require('../../database/models/terms')
-// const {termSchema} = require('../../helpers/validation/validationSchemas')
 const { updateTerm, createTerm, deleteTerm } = require('../../database/actions/terms')
 // getTerms router - GET
 router.get('/getTerms', (req, res) => {
@@ -17,7 +15,7 @@ router.get('/getTerms', (req, res) => {
         })
 })
 
-
+// Update terms router
 const updateTerms = (req, res, next) => {
     const {id} = req.params
     const {label, synonyms, term_editor, has_children} = req.body.term
@@ -31,6 +29,8 @@ const updateTerms = (req, res, next) => {
 
 router.put('/term/:id', updateTerms)
 
+
+// Delete terms router
 const deleteTerms = (req, res, next) => {
     const {id} = req.params
 
@@ -43,6 +43,8 @@ const deleteTerms = (req, res, next) => {
 
 router.delete('/term/:id', deleteTerms)
 
+
+// Create terms router
 const createTerms = (req, res, next) => {
     const {key, label, synonyms, term_editor, has_children} = req.body
 
@@ -56,4 +58,5 @@ const createTerms = (req, res, next) => {
 router.post('/createTerm', createTerms)
 
 
+// Exports
 module.exports = router;

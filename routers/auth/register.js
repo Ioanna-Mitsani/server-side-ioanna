@@ -1,11 +1,9 @@
+// Imports
 const router = require('express').Router();
-
 const userRegistration = require('../../database/actions/users/userRegistration')
-
 const { registerSchema } = require('../../helpers/validation/validationSchemas')     // joi validator schemas for user inputs
 
-
-
+// Router handler
 const register = (req, res, next) => {
     const origin = req.header('Origin')
     const {firstName, lastName, email, password} = req.body

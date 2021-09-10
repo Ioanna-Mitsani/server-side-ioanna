@@ -1,3 +1,4 @@
+// Nodemailer config for verification email
 const registrationEmail = (email, firstName, verificationLink) => {
     const content = {
         from: '"Pharma App" nodejsauthmailer@gmail.com',
@@ -17,7 +18,7 @@ const registrationEmail = (email, firstName, verificationLink) => {
     return content;
 }
 
-
+// Nodemailer config for reset password email
 const resetPasswordEmail = (email, firstName, verificationLink) => {
     const content = {
         from: '"Pharma App" nodejsauthmailer@gmail.com',
@@ -35,4 +36,6 @@ const resetPasswordEmail = (email, firstName, verificationLink) => {
     return content;
 }
 
+
+// Exports
 module.exports = {registrationEmail, resetPasswordEmail}

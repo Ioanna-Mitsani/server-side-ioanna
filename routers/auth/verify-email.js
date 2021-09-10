@@ -1,9 +1,8 @@
+// Imports
 const router = require('express').Router();
-
 const emailVerification = require('../../database/actions/users/emailVerification')
 
-
-
+// Router handler
 const verifyEmail = (req, res, next) => {
     const {token} = req.body
 

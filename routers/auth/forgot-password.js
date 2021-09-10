@@ -1,7 +1,8 @@
+// Imports
 const router = require('express').Router();
-
 const forgotPassword = require('../../database/actions/users/forgotPassword')
 
+// router handler
 const forgotPass = (req, res, next) => {
     const origin = req.header('Origin')
     const email  = req.body.email

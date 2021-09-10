@@ -1,3 +1,4 @@
+// Nodemailer SMTP Configuration
 const emailConfig = {
   from: '"Pharma App" nodejsauthmailer@gmail.com',
     host: 'smtp.gmail.com',

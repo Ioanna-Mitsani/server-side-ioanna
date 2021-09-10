@@ -35,6 +35,7 @@ const getTerms = async (page, size) => {
 }
 
 
+// Async function for /api/term/:id to update term info
 const updateTerm = async (id, label, synonyms, term_editor, has_children) => {
     const term = await TermsSchema.findOneAndUpdate({ key: id }, {
         label: label,
@@ -50,6 +51,8 @@ const updateTerm = async (id, label, synonyms, term_editor, has_children) => {
     return term
 }
 
+
+// Async function for /api/createTerm router to create new term
 const createTerm = async (key, label, synonyms, term_editor, has_children) => {
     const term = await TermsSchema.findOne({ key: key })
 
@@ -66,6 +69,8 @@ const createTerm = async (key, label, synonyms, term_editor, has_children) => {
     return newTerm
 }
 
+
+// Async function for /api/term/:id router to delete terms
 const deleteTerm = async (id) => {
     const term = await TermsSchema.findOneAndDelete({ key: key })
     if(!term) throw { status: 404, statusMessage: 'Term not found!'}

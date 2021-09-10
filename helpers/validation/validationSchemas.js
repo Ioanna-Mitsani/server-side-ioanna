@@ -1,3 +1,4 @@
+// Imports
 const joi = require('joi')
 const { bodySchemaValidate, termSchemaValidate } = require('./schemaValidation')
 
@@ -9,6 +10,7 @@ const loginValidation = async (req, _, next) => {
     bodySchemaValidate(req, next, schema)
 }
 
+/* Below are all the validation schemas for /auth routers */
 
 const passwordSchema = async (req, _, next) => {
     const schema = joi.object({
@@ -31,16 +33,5 @@ const registerSchema = (req, _, next) => {
     bodySchemaValidate(req, next, schema)
 }
 
-const termSchema = (req, _, next) =>{
-    const schema = joi.object({
-        key: joi.string().required(),
-        label: joi.string().required(),
-        synonyms: joi.string(),
-        obo_id: joi.string(),
-        term_editor: joi.string(),
-        has_children: joi.boolean()
-    })
 
-    termSchemaValidate(req, next, schema)
-}
-module.exports = {loginValidation, passwordSchema, registerSchema, termSchema};
+module.exports = {loginValidation, passwordSchema, registerSchema, };
